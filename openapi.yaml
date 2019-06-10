@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  version: "20190610"
+  title: Target Central Resource Database API
+  description: REST API for data from Target Central Resource Database
+  contact:
+    name: Oliver Ruebenacker
+    url: https://personal.broadinstitute.org/oliverr/
+    email: oliverr@broadinstitute.org
+paths:
+  /status:
+    get:
+      summary: Status of the API
+      responses:
+        200:
+          description: Success!
+          content: 
+            text/plain:
+              schema:
+                type: object
+                properties: 
+                  id:
+                    type: string
+                    enum: ["initializing", "ready", "failed"]
+                  message:
+                    type: string
+  /meta:
+    get:
+      summary: Get list of fields and available filters
+      responses:
+        200:
+          description: Success!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: ["field", "ops"]
+                  additionalProperties: false
+                  properties:
+                    field:
+                      type: string
+                    ops: 
+                      type: array
+                      items:
+                        type: string
+  /filter:
+    post:
+      summary: Filter list of genes by one or more conditions
+      requestBody:
+        description: Request with list of genes and filters
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["genes", "filters"]
+              additionalProperties: false
+              properties:
+                genes: 
+                  type: array
+                  items:
+                    type: string
+                filters:
+                  type: array
+                  items:
+                    type: object
+                    required: ["field", "op", "value"]
+                    additionalProperties: false
+                    properties:
+                      field: 
+                        type: string
+                      op: 
+                        type: string
+                      value: {}
+      responses:
+        200:
+          description: Success!
+          content:
+            applicaton/json:
+              schema:
+                type: array
+                items: 
+                  type: string
+                      
+                    
+                
+  
+    
+  
