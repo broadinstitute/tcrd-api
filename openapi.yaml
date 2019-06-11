@@ -11,6 +11,7 @@ paths:
   /status:
     get:
       summary: Status of the API
+      operationId: getStatus
       responses:
         200:
           description: Success!
@@ -18,6 +19,8 @@ paths:
             text/plain:
               schema:
                 type: object
+                required: ["id", "message"]
+                additionalProperties: false
                 properties: 
                   id:
                     type: string
@@ -72,7 +75,8 @@ paths:
                         type: string
                       op: 
                         type: string
-                      value: {}
+                      value:
+                        type: string
       responses:
         200:
           description: Success!
