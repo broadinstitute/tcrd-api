@@ -14,12 +14,8 @@ paths:
       operationId: getStatus
       responses:
         200:
-          description: Success!
-          content: 
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/Status'
-  /meta:
+          $ref: '#/components/responses/StatusOkResponse'
+  /possibleFilters:
     get:
       summary: Get list of fields and available filters
       responses:
@@ -31,7 +27,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterOptions'
-  /filter:
+  /filterGenes:
     post:
       summary: Filter list of genes by one or more conditions
       requestBody:
@@ -94,7 +90,14 @@ components:
           type: string
         value:
           type: string
-    
+  responses:
+    StatusOkResponse:
+      description: Success!
+      content: 
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/Status'
+      
                       
                     
                 
