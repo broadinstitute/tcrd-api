@@ -18,44 +18,19 @@ paths:
   /possibleFilters:
     get:
       summary: Get list of fields and available filters
+      operationId: getPossibleFilters
       responses:
         200:
-          description: Success!
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FilterOptions'
+          $ref: '#/components/responses/PossibleFiltersOkResponse'
   /filterGenes:
     post:
       summary: Filter list of genes by one or more conditions
+      operationId: filterGenes
       requestBody:
-        description: Request with list of genes and filters
-        content:
-          application/json:
-            schema:
-              type: object
-              required: ["genes", "filters"]
-              additionalProperties: false
-              properties:
-                genes: 
-                  type: array
-                  items:
-                    type: string
-                filters:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Filter'
+        $ref: '#/components/requestBodies/GenesFilterRequestBody'
       responses:
         200:
-          description: Success!
-          content:
-            applicaton/json:
-              schema:
-                type: array
-                items: 
-                  type: string
+          $ref: '#/components/responses/GenesFilterOkResponse'
 components:
   schemas:
     Status:
@@ -89,7 +64,23 @@ components:
         op: 
           type: string
         value:
-          type: string
+          oneOf:
+            - type: string
+            - type: integer
+            - type: number
+    GenesFilterQuery:
+      type: object
+      required: ["genes", "filters"]
+      additionalProperties: false
+      properties:
+        genes: 
+          type: array
+          items:
+            type: string
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
   responses:
     StatusOkResponse:
       description: Success!
@@ -97,7 +88,30 @@ components:
         text/plain:
           schema:
             $ref: '#/components/schemas/Status'
-      
+    PossibleFiltersOkResponse:
+      description: Success!
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterOptions'
+    GenesFilterOkResponse:
+      description: Success!
+      content:
+        applicaton/json:
+          schema:
+            type: array
+            items: 
+              type: string
+  requestBodies:
+    GenesFilterRequestBody:
+      description: Request with list of genes and filters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenesFilterQuery'
+    
                       
                     
                 
