@@ -18,15 +18,7 @@ paths:
           content: 
             text/plain:
               schema:
-                type: object
-                required: ["id", "message"]
-                additionalProperties: false
-                properties: 
-                  id:
-                    type: string
-                    enum: ["initializing", "ready", "failed"]
-                  message:
-                    type: string
+                $ref: '#/components/schemas/Status'
   /meta:
     get:
       summary: Get list of fields and available filters
@@ -38,16 +30,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  required: ["field", "ops"]
-                  additionalProperties: false
-                  properties:
-                    field:
-                      type: string
-                    ops: 
-                      type: array
-                      items:
-                        type: string
+                  $ref: '#/components/schemas/FilterOptions'
   /filter:
     post:
       summary: Filter list of genes by one or more conditions
@@ -67,16 +50,7 @@ paths:
                 filters:
                   type: array
                   items:
-                    type: object
-                    required: ["field", "op", "value"]
-                    additionalProperties: false
-                    properties:
-                      field: 
-                        type: string
-                      op: 
-                        type: string
-                      value:
-                        type: string
+                    $ref: '#/components/schemas/Filter'
       responses:
         200:
           description: Success!
@@ -86,6 +60,41 @@ paths:
                 type: array
                 items: 
                   type: string
+components:
+  schemas:
+    Status:
+      type: object
+      required: ["id", "message"]
+      additionalProperties: false
+      properties: 
+        id:
+          type: string
+          enum: ["initializing", "ready", "failed"]
+        message:
+          type: string
+    FilterOptions:
+      type: object
+      required: ["field", "ops"]
+      additionalProperties: false
+      properties:
+        field:
+          type: string
+        ops: 
+          type: array
+          items:
+            type: string
+    Filter:
+      type: object
+      required: ["field", "op", "value"]
+      additionalProperties: false
+      properties:
+        field: 
+          type: string
+        op: 
+          type: string
+        value:
+          type: string
+    
                       
                     
                 
