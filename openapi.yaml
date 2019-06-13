@@ -1,6 +1,6 @@
-openapi: 3.0.0
+swagger: "2.0"
 info:
-  version: "20190610"
+  version: "20190612"
   title: Target Central Resource Database API
   description: REST API for data from Target Central Resource Database
   contact:
@@ -14,105 +14,87 @@ paths:
       operationId: getStatus
       responses:
         200:
-          $ref: '#/components/responses/StatusOkResponse'
+          description: Success!
+          schema:
+            $ref: '#/definitions/Status'
   /possibleFilters:
     get:
       summary: Get list of fields and available filters
       operationId: getPossibleFilters
       responses:
         200:
-          $ref: '#/components/responses/PossibleFiltersOkResponse'
-  /filterGenes:
-    post:
-      summary: Filter list of genes by one or more conditions
-      operationId: filterGenes
-      requestBody:
-        $ref: '#/components/requestBodies/GenesFilterRequestBody'
-      responses:
-        200:
-          $ref: '#/components/responses/GenesFilterOkResponse'
-components:
-  schemas:
-    Status:
-      type: object
-      required: ["id", "message"]
-      additionalProperties: false
-      properties: 
-        id:
-          type: string
-          enum: ["initializing", "ready", "failed"]
-        message:
-          type: string
-    FilterOptions:
-      type: object
-      required: ["field", "ops"]
-      additionalProperties: false
-      properties:
-        field:
-          type: string
-        ops: 
-          type: array
-          items:
-            type: string
-    Filter:
-      type: object
-      required: ["field", "op", "value"]
-      additionalProperties: false
-      properties:
-        field: 
-          type: string
-        op: 
-          type: string
-        value:
-          oneOf:
-            - type: string
-            - type: integer
-            - type: number
-    GenesFilterQuery:
-      type: object
-      required: ["genes", "filters"]
-      additionalProperties: false
-      properties:
-        genes: 
-          type: array
-          items:
-            type: string
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/Filter'
-  responses:
-    StatusOkResponse:
-      description: Success!
-      content: 
-        text/plain:
-          schema:
-            $ref: '#/components/schemas/Status'
-    PossibleFiltersOkResponse:
-      description: Success!
-      content:
-        application/json:
+          description: Success!
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/FilterOptions'
-    GenesFilterOkResponse:
-      description: Success!
-      content:
-        applicaton/json:
+              $ref: '#/definitions/FilterOptions'
+  /filterGenes:
+    post:
+      parameters:
+        - 
+          name: body
+          in: body
+          description: JSON object with list of genes and list of filters
+          required: true
+          schema: 
+            $ref: '#/definitions/GenesFilterQuery'
+      summary: Filter list of genes by one or more conditions
+      operationId: filterGenes
+      responses:
+        200:
+          description: Success!
           schema:
             type: array
             items: 
               type: string
-  requestBodies:
-    GenesFilterRequestBody:
-      description: Request with list of genes and filters
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GenesFilterQuery'
-    
-                      
+definitions:
+  Status:
+    type: object
+    required: ["id", "message"]
+    additionalProperties: false
+    properties: 
+      id:
+        type: string
+        enum: ["initializing", "ready", "failed"]
+      message:
+        type: string
+  FilterOptions:
+    type: object
+    required: ["field", "ops"]
+    additionalProperties: false
+    properties:
+      field:
+        type: string
+      ops: 
+        type: array
+        items:
+          type: string
+  Filter:
+    type: object
+    required: ["field", "op", "value"]
+    additionalProperties: false
+    properties:
+      field: 
+        type: string
+      op: 
+        type: string
+      value:
+        type: string
+  GenesFilterQuery:
+    type: object
+    required: ["genes", "filters"]
+    additionalProperties: false
+    properties:
+      genes: 
+        type: array
+        items:
+          type: string
+      filters:
+        type: array
+        items:
+          $ref: '#/definitions/Filter'
+
+                    
                     
                 
   
