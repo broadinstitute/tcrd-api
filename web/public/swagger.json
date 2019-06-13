@@ -1,0 +1,149 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "REST API for data from Target Central Resource Database",
+    "version" : "20190612",
+    "title" : "Target Central Resource Database API",
+    "contact" : {
+      "name" : "Oliver Ruebenacker",
+      "url" : "https://personal.broadinstitute.org/oliverr/",
+      "email" : "oliverr@broadinstitute.org"
+    }
+  },
+  "paths" : {
+    "/status" : {
+      "get" : {
+        "summary" : "Status of the API",
+        "operationId" : "getStatus",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success!",
+            "schema" : {
+              "$ref" : "#/definitions/Status"
+            }
+          }
+        },
+        "x-accepts" : "application/json"
+      }
+    },
+    "/possibleFilters" : {
+      "get" : {
+        "summary" : "Get list of fields and available filters",
+        "operationId" : "getPossibleFilters",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success!",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FilterOptions"
+              }
+            }
+          }
+        },
+        "x-accepts" : "application/json"
+      }
+    },
+    "/filterGenes" : {
+      "post" : {
+        "summary" : "Filter list of genes by one or more conditions",
+        "operationId" : "filterGenes",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "JSON object with list of genes and list of filters",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GenesFilterQuery"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success!",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "x-contentType" : "application/json",
+        "x-accepts" : "application/json"
+      }
+    }
+  },
+  "definitions" : {
+    "Status" : {
+      "type" : "object",
+      "required" : [ "id", "message" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "enum" : [ "initializing", "ready", "failed" ]
+        },
+        "message" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "id" : "initializing",
+        "message" : "message"
+      }
+    },
+    "FilterOptions" : {
+      "type" : "object",
+      "required" : [ "field", "ops" ],
+      "properties" : {
+        "field" : {
+          "type" : "string"
+        },
+        "ops" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "example" : {
+        "ops" : [ "ops", "ops" ],
+        "field" : "field"
+      }
+    },
+    "Filter" : {
+      "type" : "object",
+      "required" : [ "field", "op", "value" ],
+      "properties" : {
+        "field" : {
+          "type" : "string"
+        },
+        "op" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "GenesFilterQuery" : {
+      "type" : "object",
+      "required" : [ "filters", "genes" ],
+      "properties" : {
+        "genes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "filters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Filter"
+          }
+        }
+      }
+    }
+  }
+}
