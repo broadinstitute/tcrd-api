@@ -22,7 +22,7 @@ fi
 mkdir ${web_api_dir_new}
 cp ${api_specs} ${web_api_dir_new}
 cd ${web_api_dir_new}
-java -jar ${codegen_jar} generate -l java-play-framework -i ${api_specs}
+java -jar ${codegen_jar} generate -l scalatra -i ${api_specs} --model-package tcrd.model --api-package tcrd.server.api
 cd ..
 
 if [[ -e "${web_api_dir_old}" ]]; then

@@ -3,20 +3,38 @@ import sbt.Keys.libraryDependencies
 ThisBuild / version := "0.0.1"
 ThisBuild / scalaVersion := "2.12.8"
 
-lazy val web = (project in file("web"))
-  .dependsOn(db)
-  .enablePlugins(PlayJava)
+val ScalatraVersion = "2.6.2"
+
+lazy val model = (project in file("model"))
   .settings(
-    name := "tcrd-web",
-    libraryDependencies ++=
-      Seq(
-        "org.webjars" % "swagger-ui" % "3.1.5",
-        "javax.validation" % "validation-api" % "1.1.0.Final",
-        guice
-      )
+    name := "tcrd-model"
   )
 
 lazy val db = (project in file("db"))
+  .dependsOn(model)
   .settings(
     name := "tcrd-db"
   )
+
+lazy val web = (project in file("web"))
+  .dependsOn(model, db) 
+  .enablePlugins(JettyPlugin)
+  .settings(
+    name := "tcrd-web",
+    mainClass in assembly := Some("JettyMain"),
+    libraryDependencies ++= Seq(
+      "org.scalatra" %% "scalatra" % ScalatraVersion,
+      "org.scalatra" %% "scalatra-swagger" % ScalatraVersion,
+      "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % Test,
+      "org.json4s" %% "json4s-jackson" % "3.5.0",
+      "org.eclipse.jetty" % "jetty-server" % "9.4.8.v20171121",
+      "org.eclipse.jetty" % "jetty-webapp" % "9.4.8.v20171121",
+      "javax.servlet" % "javax.servlet-api" % "3.1.0",
+      "ch.qos.logback" % "logback-classic" % "1.2.3" % Provided
+    )
+  )
+
+
+
+
+
