@@ -34,6 +34,8 @@ class DefaultApi(implicit val swagger: Swagger) extends ScalatraServlet
 
   protected val applicationDescription: String = "DefaultApi"
 
+  println("Constructing DefaultApi")
+
   before() {
     contentType = formats("json")
     response.headers += ("Access-Control-Allow-Origin" -> "*")
