@@ -14,7 +14,6 @@ package tcrd.server.api
 import tcrd.model.FilterOptions
 import tcrd.model.GenesFilterQuery
 import tcrd.model.Status
-
 import java.io.File
 
 import org.scalatra.ScalatraServlet
@@ -23,10 +22,11 @@ import org.json4s._
 import org.json4s.JsonDSL._
 import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
 import org.scalatra.servlet.{ FileUploadSupport, MultipartConfig, SizeConstraintExceededException }
+import tcrd.db.api.DbApi
 
 import scala.collection.JavaConverters._
 
-class DefaultApi(implicit val swagger: Swagger) extends ScalatraServlet
+class DefaultApi(dbApi: DbApi)(implicit val swagger: Swagger) extends ScalatraServlet
   with FileUploadSupport
   with JacksonJsonSupport
   with SwaggerSupport {
@@ -50,6 +50,7 @@ class DefaultApi(implicit val swagger: Swagger) extends ScalatraServlet
     val body = parsedBody.extract[GenesFilterQuery]
 
     println("body: " + body)
+    dbApi.filterGenes(body)
   }
 
   val getPossibleFiltersOperation = (apiOperation[List[FilterOptions]]("getPossibleFilters")
@@ -57,6 +58,7 @@ class DefaultApi(implicit val swagger: Swagger) extends ScalatraServlet
     parameters ())
 
   get("/possibleFilters", operation(getPossibleFiltersOperation)) {
+    dbApi.possibleFilters
   }
 
   val getStatusOperation = (apiOperation[Status]("getStatus")
@@ -64,6 +66,7 @@ class DefaultApi(implicit val swagger: Swagger) extends ScalatraServlet
     parameters ())
 
   get("/status", operation(getStatusOperation)) {
+    dbApi.status
   }
 
 }

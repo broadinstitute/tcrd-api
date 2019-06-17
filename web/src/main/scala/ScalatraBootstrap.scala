@@ -13,13 +13,15 @@ import tcrd.server.api._
 import io.swagger.app.{ ResourcesApp, SwaggerApp }
 import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
+import tcrd.db.api.mock.DbMockApi
 
 class ScalatraBootstrap extends LifeCycle {
   implicit val swagger = new SwaggerApp
 
   override def init(context: ServletContext) {
     try {
-      context mount (new DefaultApi, "/Default/*")
+      val dbApi = DbMockApi
+      context mount (new DefaultApi(dbApi), "/Default/*")
 
       context mount (new ResourcesApp, "/api-docs/*")
     } catch {
