@@ -13,7 +13,8 @@ lazy val model = (project in file("model"))
 lazy val db = (project in file("db"))
   .dependsOn(model)
   .settings(
-    name := "tcrd-db"
+    name := "tcrd-db",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
   )
 
 lazy val web = (project in file("web"))
