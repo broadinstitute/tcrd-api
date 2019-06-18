@@ -9,6 +9,7 @@ case class Record(id: String, values: Map[String, String], schema: Schema) {
   def getNumber(colName: String): Option[Double] = {
     (values.get(colName), schema.colMap.get(colName)) match {
       case (Some(value), Some(numberCol: NumberCol)) => numberCol.parse(value)
+      case _ => None
     }
   }
 

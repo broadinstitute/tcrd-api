@@ -18,7 +18,7 @@ object Schema {
         case None => StringCol(header)
       }
     }
-    val colMap = colList.map( col => (col.name, col)).toMap
+    val colMap = colList.map(col => (col.name, col)).toMap
     colMap.get(geneIdColName) match {
       case Some(geneIdCol: StringCol) =>
         Right(Schema(geneIdCol, colList, colMap))
