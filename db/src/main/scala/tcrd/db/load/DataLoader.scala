@@ -7,8 +7,7 @@ import scala.io.Source
 
 object DataLoader {
 
-  def getRecords(source: Source, geneIdColName: String, cols: Set[ColBase]):
-  Either[String, Iterator[Either[String, Record]] = {
+  def getRecords(source: Source, geneIdColName: String, cols: Set[ColBase]): LoadResult = {
     val lineIter = source.getLines().zipWithIndex
     if (!lineIter.hasNext) {
       Right(Iterator.empty)
@@ -21,7 +20,6 @@ object DataLoader {
               val recordIter = lineIter.map { case (line, index) =>
                 CsvLineParser.parseLine(line) match {
                   case Right(values) =>
-                    val nValues = values.size
                     if(values.size != schema.colList.size) {
                       Left(s"Row $index has ${values.size} values but needs to have ${schema.colList.size}")
                     } else {
@@ -31,11 +29,16 @@ object DataLoader {
                     }
                 }
               }
-            case Left(message) => Left(message)
+              LoadSuccess(schema, recordIter)
+            case Left(message) => LoadFailure(message)
           }
-        case Left(message) => Left(message)
+        case Left(message) => LoadFailure(message)
       }
     }
   }
+
+  sealed trait LoadResult
+  case class LoadFailure(message: String) extends LoadResult
+  case class LoadSuccess(schema: Schema, recordIter: Iterator[Either[String, Record]]) extends LoadResult
 
 }

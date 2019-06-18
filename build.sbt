@@ -14,7 +14,10 @@ lazy val db = (project in file("db"))
   .dependsOn(model)
   .settings(
     name := "tcrd-db",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+    libraryDependencies ++= Seq(
+      "com.github.pathikrit" %% "better-files" % "3.8.0",
+      "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+    )
   )
 
 lazy val web = (project in file("web"))
