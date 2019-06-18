@@ -1,5 +1,5 @@
 package tcrd.db
 
-trait DB {
+trait Db {
 
 }

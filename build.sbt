@@ -16,7 +16,10 @@ lazy val db = (project in file("db"))
     name := "tcrd-db",
     libraryDependencies ++= Seq(
       "com.github.pathikrit" %% "better-files" % "3.8.0",
-      "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+      "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+      "org.scalikejdbc" %% "scalikejdbc"       % "3.3.2",
+      "com.h2database"  %  "h2"                % "1.4.199",
+      "ch.qos.logback"  %  "logback-classic"   % "1.2.3"
     )
   )
 
