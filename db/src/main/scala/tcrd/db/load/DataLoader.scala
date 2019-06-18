@@ -1,11 +1,15 @@
 package tcrd.db.load
 
+import better.files.File
 import tcrd.db.Schema.ColBase
 import tcrd.db.{Record, Schema}
 
 import scala.io.Source
 
 object DataLoader {
+
+  def getRecords(file: File, geneIdColName: String, cols: Set[ColBase]): LoadResult =
+    getRecords(Source.fromFile(file.toJava, "UTF-8"), geneIdColName, cols)
 
   def getRecords(source: Source, geneIdColName: String, cols: Set[ColBase]): LoadResult = {
     val lineIter = source.getLines().zipWithIndex
