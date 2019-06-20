@@ -9,18 +9,26 @@
  * https://github.com/swagger-api/swagger-codegen.git
  */
 
-import tcrd.server.api._
 import io.swagger.app.{ ResourcesApp, SwaggerApp }
 import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
-import tcrd.db.api.mock.DbMockApi
+import tcrd.db.DbDefaultApi
+import tcrd.db.config.DbConfig
+import tcrd.server.api._
 
 class ScalatraBootstrap extends LifeCycle {
   implicit val swagger = new SwaggerApp
 
   override def init(context: ServletContext) {
     try {
-      val dbApi = DbMockApi
+      val dbApi =
+        DbDefaultApi(DbConfig.localFile) match {
+          case Left(message) =>
+            println(message)
+            throw new RuntimeException(message)
+          case Right(dbDefaultApi) => dbDefaultApi
+        }
+
       context mount (new DefaultApi(dbApi), "/Default/*")
 
       context mount (new ResourcesApp, "/api-docs/*")

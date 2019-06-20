@@ -1,6 +1,6 @@
 package tcrd.db
 
-import tcrd.db.Schema.{ Col, ColBase, StringCol }
+import tcrd.db.Schema.{ ColBase, StringCol }
 
 import scala.util.Try
 
