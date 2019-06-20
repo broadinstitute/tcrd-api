@@ -7,7 +7,7 @@ class SqlUtilsTest extends FunSuite {
   test("quote") {
     val string = "I just came to say \"hello\"!"
     val quotedString = "\"I just came to say \"\"hello\"\"!\""
-    assert(SqlUtils.quote("I just came to say \"hello\"!") === quotedString)
+    assert(SqlUtils.quoteId("I just came to say \"hello\"!") === quotedString)
   }
   test("getCreateTableSql") {
     val tableName = "blub"

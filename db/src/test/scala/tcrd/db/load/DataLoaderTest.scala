@@ -2,8 +2,10 @@ package tcrd.db.load
 
 import better.files.File
 import org.scalatest.FunSuite
-import tcrd.db.{ Record, Schema }
-import tcrd.db.Schema.{ ColBase, NumberCol, StringCol }
+import tcrd.db.{Record, Schema}
+import tcrd.db.Schema.{ColBase, NumberCol, StringCol}
+
+import scala.io.Source
 
 class DataLoaderTest extends FunSuite {
 
@@ -30,7 +32,7 @@ class DataLoaderTest extends FunSuite {
         |a,bit,too,many,cols
       """.stripMargin.trim)
     val countCol = NumberCol("count")
-    DataLoader.getRecords(dataFile, "id", Set[ColBase](countCol)) match {
+    DataLoader.getRecords(Source.fromFile(dataFile.toJava), "id", Set[ColBase](countCol)) match {
       case DataLoader.LoadFailure(message) => fail(message)
       case DataLoader.LoadSuccess(schema, recordIterator) =>
         val geneIdCol = StringCol("id")

@@ -1,14 +1,11 @@
 package tcrd.db
 
-import scalikejdbc.{ConnectionPool, DB, DBSession, GlobalSettings, LoggingSQLAndTimeSettings}
-import scalikejdbc._
-import tcrd.db.Schema.{ColBase, NumberCol, StringCol}
+import scalikejdbc.{ ConnectionPool, DB, DBSession, GlobalSettings, LoggingSQLAndTimeSettings }
+import tcrd.data.DataCols
 import tcrd.db.api.DbApi
 import tcrd.db.config.DbConfig
 import tcrd.db.load.DataLoader
-import tcrd.model.{FilterOptions, GenesFilterQuery, Status}
-
-import scala.util.{Failure, Success, Try}
+import tcrd.model.{ FilterOptions, GenesFilterQuery, Status }
 
 class DbDefaultApi(val schema: Schema, recordIter: Iterator[Either[String, Record]]) extends DbApi {
   override def status: Status = ???
@@ -20,11 +17,11 @@ class DbDefaultApi(val schema: Schema, recordIter: Iterator[Either[String, Recor
 
 object DbDefaultApi {
 
-  def apply(config: DbConfig): Either[String, DbDefaultApi] = {
+  def adjustGlobalSettings: Unit = {
     GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
       enabled = true,
       singleLineMode = false,
-      printUnprocessedStackTrace = true,
+      printUnprocessedStackTrace = false,
       stackTraceDepth = 15,
       logLevel = 'debug,
       warningEnabled = false,
@@ -32,18 +29,37 @@ object DbDefaultApi {
       warningLogLevel = 'warn)
     GlobalSettings.loggingConnections = true
     GlobalSettings.loggingSQLErrors = true
-    val geneIdCol = StringCol(config.geneIdColName)
-    val cols = config.numberColNames.map(NumberCol).toSet[ColBase] + geneIdCol
-    DataLoader.getRecords(config.source, config.geneIdColName, cols) match {
+  }
+
+  def apply(config: DbConfig): Either[String, DbDefaultApi] = {
+    adjustGlobalSettings
+    DataLoader.getRecords(config.source, DataCols.primaryKey.name, DataCols.cols) match {
       case DataLoader.LoadFailure(message) => Left(message)
       case DataLoader.LoadSuccess(schema, recordIter) =>
         Class.forName("org.h2.Driver")
         ConnectionPool.singleton("jdbc:h2:mem:hello", "user", "pass")
+        val sql = SqlUtils.getCreateTableSql(config.tableName, schema)
         DB.localTx { implicit session: DBSession =>
-          val sql = SqlUtils.getCreateTableSql(config.tableName, schema)
-          println(sql.statement)
           sql.execute.apply()
         }
+        println("Now inserting records")
+        var recordCount: Long = 0
+        var reportedAtRecordCount: Long = 0
+        recordIter.foreach {
+          case Left(message) =>
+            println(message)
+          case Right(record) =>
+            val sql = SqlUtils.getInsertRecordSql(config.tableName, record)
+            DB.localTx { implicit session: DBSession =>
+              sql.execute.apply()
+            }
+            recordCount += 1
+            if (recordCount > reportedAtRecordCount + reportedAtRecordCount / 11) {
+              println(s"Still inserting records - inserted $recordCount records.")
+              reportedAtRecordCount = recordCount
+            }
+        }
+        println(s"Done inserting records - inserted $recordCount records.")
         Right(new DbDefaultApi(schema, recordIter))
     }
   }

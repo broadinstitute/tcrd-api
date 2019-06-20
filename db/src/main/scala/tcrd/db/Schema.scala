@@ -14,7 +14,8 @@ object Schema {
     val colMapInitial = cols.map(col => (col.name, col)).toMap
     val colList = headers.map { header =>
       colMapInitial.get(header) match {
-        case Some(col) => col
+        case Some(col) =>
+          println(col); col
         case None => StringCol(header)
       }
     }
@@ -55,8 +56,8 @@ object Schema {
     }.toOption
   }
 
-  case class StringCol(name: String) extends Col[String] {
-    override def typeName: String = "String"
+  case class StringCol(name: String, length: Int = 255) extends Col[String] {
+    override def typeName: String = s"VARCHAR($length)"
 
     override def extract(string: String): String = string
 
@@ -64,7 +65,7 @@ object Schema {
   }
 
   case class NumberCol(name: String) extends Col[Double] {
-    override def typeName: String = "Number"
+    override def typeName: String = "FLOAT"
 
     override def extract(string: String): Double = string.toDouble
   }
