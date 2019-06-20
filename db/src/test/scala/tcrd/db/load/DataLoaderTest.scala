@@ -2,14 +2,14 @@ package tcrd.db.load
 
 import better.files.File
 import org.scalatest.FunSuite
-import tcrd.db.{Record, Schema}
-import tcrd.db.Schema.{ColBase, NumberCol, StringCol}
+import tcrd.db.{ Record, Schema }
+import tcrd.db.Schema.{ ColBase, NumberCol, VarCharCol }
 
 import scala.io.Source
 
 class DataLoaderTest extends FunSuite {
 
-  def assertSchema(schema: Schema, geneIdCol: StringCol, countCol: NumberCol): Unit = {
+  def assertSchema(schema: Schema, geneIdCol: VarCharCol, countCol: NumberCol): Unit = {
     assert(schema.colList.size == 4)
     assert(schema.geneIdCol == geneIdCol)
     assert(schema.colList(0) == geneIdCol)
@@ -35,7 +35,7 @@ class DataLoaderTest extends FunSuite {
     DataLoader.getRecords(Source.fromFile(dataFile.toJava), "id", Set[ColBase](countCol)) match {
       case DataLoader.LoadFailure(message) => fail(message)
       case DataLoader.LoadSuccess(schema, recordIterator) =>
-        val geneIdCol = StringCol("id")
+        val geneIdCol = VarCharCol("id")
         assertSchema(schema, geneIdCol, countCol)
         val recordEitherList = recordIterator.toList
         assert(recordEitherList.size == 5)

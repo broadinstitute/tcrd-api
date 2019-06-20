@@ -1,7 +1,7 @@
 package tcrd.db
 
 import scalikejdbc._
-import tcrd.db.Schema.{ NumberCol, StringCol }
+import tcrd.db.Schema.{ NumberCol, StringCol, VarCharCol }
 
 import scala.util.Try
 
@@ -26,7 +26,7 @@ object SqlUtils {
         s"$colName VARCHAR(${schema.geneIdCol.length}) NOT NULL PRIMARY KEY"
       case stringCol: StringCol =>
         val colName = quoteId(stringCol.name)
-        s"$colName VARCHAR(${stringCol.length})"
+        s"$colName ${stringCol.typeName}"
       case numberCol: NumberCol =>
         val colName = quoteId(numberCol.name)
         s"$colName FLOAT"
@@ -39,7 +39,7 @@ object SqlUtils {
   def getInsertRecordSql(tableName: String, record: Record): SQL[Nothing, NoExtractor] = {
     val sqlKeyValuePairs = record.values.flatMap {
       case (key, value) =>
-        record.schema.colMap.getOrElse(key, StringCol(key)) match {
+        record.schema.colMap.getOrElse(key, VarCharCol(key)) match {
           case _: StringCol => Some((quoteId(key), quoteString(value)))
           case _: NumberCol =>
             Try(value.toDouble).toOption match {
