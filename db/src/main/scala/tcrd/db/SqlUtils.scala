@@ -17,6 +17,7 @@ object SqlUtils {
   }
 
   def quoteString(string: String): String = quoteAny(string, sQuote)
+
   def quoteId(string: String): String = quoteAny(string, dQuote)
 
   def getCreateTableSql(tableName: String, schema: Schema): SQL[Nothing, NoExtractor] = {
@@ -53,6 +54,38 @@ object SqlUtils {
     val sqlKeysPhrase = "(\n  " + sqlKeyValuePairs.map(_._1).mkString(",\n  ") + "\n)"
     val sqlValuesPhrase = "(\n  " + sqlKeyValuePairs.map(_._2).mkString(",\n  ") + "\n)"
     SQL(s"INSERT INTO $tableNameQuoted $sqlKeysPhrase VALUES $sqlValuesPhrase;")
+  }
+
+  sealed trait FilterClause {
+    def field: String
+
+    def op: String
+
+    def value: Any
+
+    def asString: String
+  }
+
+  case class StringFilterClause(field: String, op: String, value: String) extends FilterClause {
+    override def asString: String = {
+      val quotedField = quoteId(field)
+      val quotedValue = quoteString(value)
+      s"$quotedField $op $quotedValue"
+    }
+  }
+
+  case class NumberFilterClause(field: String, op: String, value: Double) extends FilterClause {
+    override def asString: String = {
+      val quotedField = quoteId(field)
+      s"$quotedField $op $value"
+    }
+  }
+
+  def getSelectGenesWhere(tableName: String, geneColName: String,
+    filterClauses: Seq[FilterClause]): SQL[Nothing, NoExtractor] = {
+    val selectClause = s"SELECT $geneColName FROM $tableName \n"
+    val whereClause = "WHERE " + filterClauses.map(_.asString).mkString(" AND \n") + ";"
+    SQL(selectClause + whereClause)
   }
 
 }

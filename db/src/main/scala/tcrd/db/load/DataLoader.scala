@@ -1,6 +1,5 @@
 package tcrd.db.load
 
-import better.files.File
 import tcrd.db.Schema.ColBase
 import tcrd.db.{ Record, Schema }
 
@@ -21,6 +20,7 @@ object DataLoader {
               val recordIter = lineIter.map {
                 case (line, index) =>
                   CsvLineParser.parseLine(line) match {
+                    case Left(message) => Left(message)
                     case Right(values) =>
                       if (values.size != schema.colList.size) {
                         Left(s"Row $index has ${values.size} values but needs to have ${schema.colList.size}")
