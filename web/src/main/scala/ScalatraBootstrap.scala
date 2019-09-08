@@ -11,7 +11,7 @@
 
 import io.swagger.app.{ ResourcesApp, SwaggerApp }
 import javax.servlet.ServletContext
-import org.scalatra.LifeCycle
+import org.scalatra.{ LifeCycle, ScalatraBase }
 import tcrd.db.DbDefaultApi
 import tcrd.db.config.DbConfig
 import tcrd.server.api._

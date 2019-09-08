@@ -38,7 +38,8 @@ lazy val web = (project in file("web"))
       "org.eclipse.jetty" % "jetty-webapp" % "9.4.8.v20171121",
       "javax.servlet" % "javax.servlet-api" % "3.1.0",
       "ch.qos.logback" % "logback-classic" % "1.2.3" % Provided
-    )
+    ),
+    containerPort in Jetty := 8888
   )
 
 

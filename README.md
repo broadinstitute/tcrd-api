@@ -1,7 +1,7 @@
 # tcrd-api
 Target Central Resource Database API
 
-In SBT, type "project web" and then "run", and the API should be on http://localhost:8080/Default.
+In SBT, type "project web" and then "run", and the API should be on http://localhost:8888/Default.
 
 This has three sub-projects: model, db and web. All Swagger-generated code is in model and web.
 
