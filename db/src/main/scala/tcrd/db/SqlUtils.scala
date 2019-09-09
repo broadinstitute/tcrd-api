@@ -24,7 +24,13 @@ object SqlUtils {
     val colDefs = schema.colList.map {
       case schema.geneIdCol =>
         val colName = quoteId(schema.geneIdCol.name)
-        s"$colName VARCHAR(${schema.geneIdCol.length}) NOT NULL PRIMARY KEY"
+        schema.geneIdCol match {
+          case geneIdVarCharCol: VarCharCol =>
+            s"$colName VARCHAR(${geneIdVarCharCol.length}) NOT NULL PRIMARY KEY"
+          case _: NumberCol =>
+            // We are assuming here that no one would specify a non-integer numerical column to be primary key
+            s"$colName INT NOT NULL PRIMARY KEY"
+        }
       case stringCol: StringCol =>
         val colName = quoteId(stringCol.name)
         s"$colName ${stringCol.typeName}"

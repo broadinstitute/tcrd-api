@@ -1,10 +1,10 @@
 package tcrd.db
 
-import tcrd.db.Schema.{ ColBase, VarCharCol }
+import tcrd.db.Schema.{ ColBase, PrimaryKeyEligibleCol, VarCharCol }
 
 import scala.util.Try
 
-case class Schema(geneIdCol: VarCharCol, colList: Seq[ColBase], colMap: Map[String, ColBase]) {
+case class Schema(geneIdCol: PrimaryKeyEligibleCol, colList: Seq[ColBase], colMap: Map[String, ColBase]) {
 
 }
 
@@ -21,10 +21,10 @@ object Schema {
     }
     val colMap = colList.map(col => (col.name, col)).toMap
     colMap.get(geneIdColName) match {
-      case Some(geneIdCol: VarCharCol) =>
+      case Some(geneIdCol: PrimaryKeyEligibleCol) =>
         Right(Schema(geneIdCol, colList, colMap))
       case Some(geneIdCol) =>
-        Left(s"Column for gene id must be declared as a VARCHAR column. but is ${geneIdCol.getClass.getCanonicalName}.")
+        Left(s"Column for gene id must be eligible to be primary key, but is ${geneIdCol.getClass.getCanonicalName}.")
       case None =>
         Left(s"Data is missing column $geneIdColName.")
     }
@@ -44,6 +44,8 @@ object Schema {
     }.toOption
   }
 
+  sealed trait PrimaryKeyEligibleCol extends ColBase
+
   sealed trait Col[T] extends ColBase {
     def name: String
 
@@ -62,7 +64,7 @@ object Schema {
     override def parse(string: String): Some[String] = Some(string)
   }
 
-  case class VarCharCol(name: String, length: Int = 255) extends StringCol {
+  case class VarCharCol(name: String, length: Int = 255) extends StringCol with PrimaryKeyEligibleCol {
     override def typeName: String = s"VARCHAR($length)"
   }
 
@@ -70,7 +72,7 @@ object Schema {
     override def typeName: String = "CLOB"
   }
 
-  case class NumberCol(name: String) extends Col[Double] {
+  case class NumberCol(name: String) extends Col[Double] with PrimaryKeyEligibleCol {
     override def typeName: String = "FLOAT"
 
     override def extract(string: String): Double = string.toDouble
