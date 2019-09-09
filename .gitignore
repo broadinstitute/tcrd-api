@@ -20,3 +20,12 @@ project/plugins/project/
 # IntelliJ specific
 .idea
 *.iml
+
+# Eclipse IDE
+.settings
+.project
+.classpath
+.cache-main
+
+# data file
+tcrd/TCRDv5.4.2exp.csv
