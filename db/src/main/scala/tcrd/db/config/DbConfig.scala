@@ -12,7 +12,7 @@ object DbConfig {
   val localFile: DbConfig = {
     val tableName = "data"
     val primaryKeyColName = "TCRD ID"
-    val file = File("/home/BROAD.MIT.EDU/oliverr/translator/tcrd/TCRDv5.4.2exp.csv")
+    val file = File("tcrd/TCRDv5.4.2exp.csv")
     DbConfig(tableName, primaryKeyColName, file)
   }
 }
