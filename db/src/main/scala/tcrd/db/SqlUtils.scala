@@ -89,7 +89,7 @@ object SqlUtils {
 
   def getSelectGenesWhere(tableName: String, geneColName: String,
     filterClauses: Seq[FilterClause]): SQL[Nothing, NoExtractor] = {
-    val selectClause = s"SELECT $geneColName FROM $tableName \n"
+    val selectClause = s"SELECT ${quoteId(geneColName)} FROM $tableName \n"
     val whereClause = "WHERE " + filterClauses.map(_.asString).mkString(" AND \n") + ";"
     SQL(selectClause + whereClause)
   }
