@@ -26,9 +26,9 @@ class DbDefaultApi(val config: DbConfig, val schema: Schema, val nRecords: Long)
         case _ => SqlUtils.StringFilterClause(filter.field, filter.op, filter.value)
       }
     }
-    val sql = SqlUtils.getSelectGenesWhere(config.tableName, config.primaryKeyColName, filterClauses)
+    val sql = SqlUtils.getSelectGenesWhere(config.tableName, config.apiKeyColName, filterClauses)
     val genesFound = DB.localTx { implicit session: DBSession =>
-      sql.map(rs => rs.string(config.primaryKeyColName)).list().apply()
+      sql.map(rs => rs.int(config.apiKeyColName).toString).list().apply()
     }.toSet
     query.genes.filter(genesFound)
   }
@@ -36,7 +36,7 @@ class DbDefaultApi(val config: DbConfig, val schema: Schema, val nRecords: Long)
 
 object DbDefaultApi {
 
-  def adjustGlobalSettings: Unit = {
+  def adjustGlobalSettings(): Unit = {
     GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(
       enabled = true,
       singleLineMode = false,
@@ -118,8 +118,8 @@ object DbDefaultApi {
   }
 
   def apply(config: DbConfig): Either[String, DbDefaultApi] = {
-    adjustGlobalSettings
-    val primaryKeyColName = config.primaryKeyColName
+    adjustGlobalSettings()
+    val primaryKeyColName = config.dbPrimaryKeyColName
     DataLoader.getRecords(config.source, primaryKeyColName, Set.empty) match {
       case DataLoader.LoadFailure(message) =>
         println(message)
